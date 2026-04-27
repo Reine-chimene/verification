@@ -12,5 +12,5 @@ yarn-error.log*
 .vscode/
 .idea/
 dist/
-build/
+.build/
 .vercel
