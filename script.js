@@ -85,24 +85,32 @@ function validateForm(formData) {
 }
 
 /**
- * Show message to user
+ * Show toast message to user
  */
 function showMessage(text, type) {
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = text;
-    messageDiv.className = `message ${type}`;
-    messageDiv.style.display = 'block';
-
-    // Auto-hide after 5 seconds
+    const toast = document.getElementById('message');
+    const icon = toast.querySelector('i');
+    
+    // Update icon based on type
+    if (type === 'success') {
+        icon.className = 'fas fa-check-circle';
+    } else if (type === 'error') {
+        icon.className = 'fas fa-exclamation-circle';
+    }
+    
+    toast.querySelector('.toast-message').textContent = text;
+    toast.className = `toast ${type} show`;
+    
+    // Auto-hide after 6 seconds
     setTimeout(() => {
         hideMessage();
-    }, 5000);
+    }, 6000);
 }
 
 /**
  * Hide message
  */
 function hideMessage() {
-    const messageDiv = document.getElementById('message');
-    messageDiv.style.display = 'none';
+    const toast = document.getElementById('message');
+    toast.classList.remove('show');
 }
