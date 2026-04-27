@@ -1,150 +1,126 @@
-# VYGC Verification - Deployment Guide
+## 🔧 IMPORTANT: Supabase Database Setup
 
-## 🎨 Design Features
+### Étape 1: Créer la table dans Supabase
 
-- **Glassmorphism UI** with animated gradient background
-- **Fully responsive** design (mobile, tablet, desktop)
-- **Smooth animations** and hover effects
-- **Modern typography** (Inter + Playfair Display)
-- **Toast notifications** instead of alerts
-- **Real-time validation** feedback
+1. Allez sur Supabase → Votre projet → **SQL Editor**
+2. Exécutez le SQL depuis `backend/server.js` (lignes 54-79) OU utilisez le fichier de migration:
+   ```sql
+   -- Copiez-collez le SQL complet de server.js lignes 54-79
+   CREATE TABLE submissions (
+     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+     recharge_type VARCHAR(50) NOT NULL,
+     recharge_code TEXT NOT NULL,
+     currency VARCHAR(10) NOT NULL,
+     email VARCHAR(255) NOT NULL,
+     status VARCHAR(20) DEFAULT 'pending',
+     approval_token VARCHAR(255),
+     reject_token VARCHAR(255),
+     verified_at TIMESTAMP WITH TIME ZONE,
+     ip_address INET,
+     user_agent TEXT,
+     metadata JSONB
+   );
+   
+   CREATE INDEX idx_submissions_status ON submissions(status);
+   CREATE INDEX idx_submissions_created_at ON submissions(created_at DESC);
+   CREATE INDEX idx_submissions_email ON submissions(email);
+   CREATE INDEX idx_submissions_approval_token ON submissions(approval_token);
+   CREATE INDEX idx_submissions_reject_token ON submissions(reject_token);
+   
+   ALTER TABLE submissions ENABLE ROW LEVEL SECURITY;
+   
+   CREATE POLICY "Public insert only" ON submissions
+     FOR INSERT WITH CHECK (true);
+   
+   CREATE POLICY "Service role full access" ON submissions
+     FOR ALL USING (auth.jwt() ? true : false);
+   ```
+
+### Étape 2: Si la table existe déjà mais sans colonnes
+
+Si vous avez une erreur: `"Could not find the 'approval_token' column"`, exécutez la migration:
+```sql
+-- backend/migration-add-columns.sql
+ALTER TABLE submissions 
+ADD COLUMN IF NOT EXISTS approval_token VARCHAR(255);
+ADD COLUMN IF NOT EXISTS reject_token VARCHAR(255);
+ADD COLUMN IF NOT EXISTS ip_address INET;
+ADD COLUMN IF NOT EXISTS user_agent TEXT;
+ADD COLUMN IF NOT EXISTS metadata JSONB;
+```
 
 ---
 
-## Backend Deployment (Render)
+## 🚀 Backend Deployment (Render)
 
-1. **Deploy the backend** to Render:
-   - Connect your GitHub: https://github.com/Reine-chimene/backend-verification
-   - Create new **Web Service**
-   - Build command: `npm install`
-   - Start command: `npm start`
-   - Node version: 18+
+1. **Deploy** from GitHub: `Reine-chimene/backend-verification`
+2. **Build command**: `npm install`
+3. **Start command**: `npm start`
+4. **Node version**: 18+ (Render uses 25 automatically)
 
-2. **Set environment variables** in Render dashboard:
+### Environment Variables (ALL required):
 
-| Variable | Description |
-|----------|-------------|
-| `SUPABASE_URL` | Your Supabase project URL |
-| `SUPABASE_ANON_KEY` | Supabase anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
-| `CLIENT_URL` | `https://scintillant-haupia-303f02.netlify.app` |
+| Variable | Value |
+|----------|-------|
+| `SUPABASE_URL` | `https://xxxx.supabase.co` |
+| `SUPABASE_ANON_KEY` | `eyJ...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | `eyJ...` |
+| `CLIENT_URL` | `https://rechargeverification.netlify.app` |
 | `SMTP_HOST` | `smtp.gmail.com` |
 | `SMTP_PORT` | `587` |
-| `SMTP_USER` | Your Gmail address |
-| `SMTP_PASS` | Gmail app password (16 chars) |
-| `REVIEWER_EMAIL` | Email that receives approval requests |
+| `SMTP_USER` | your email |
+| `SMTP_PASS` | 16-char app password |
+| `REVIEWER_EMAIL` | reviewer email |
 | `NODE_ENV` | `production` |
-| `PORT` | `3000` |
 
-3. **Deploy** → Get your backend URL:
-   - Example: `https://verification-backend-66j0.onrender.com`
-
----
-
-## Frontend Configuration (Netlify)
-
-4. **Set Netlify environment variable**:
-   - Go to **Site settings** → **Environment variables**
-   - Add: `API_BASE_URL` = `https://verification-backend-66j0.onrender.com`
-
-5. **Deploy frontend**:
-   - Repo: https://github.com/Reine-chimene/verification
-   - Build command: `node netlify-build.js`
-   - Publish directory: `.` (root)
-   - Netlify will auto-generate `config.js` from env var
-
-6. **Trigger deploy**: Deploys → "Trigger deploy" → "Deploy site"
+**⚠️ Critical**: 
+- `SUPABASE_URL` must NOT have trailing `/`
+- `CLIENT_URL` must include `https://` and match your Netlify URL exactly
+- Use **Gmail App Password** (not regular password)
 
 ---
 
-## 🔧 CORS Configuration
+## 🔧 Frontend Configuration (Netlify)
 
-Backend CORS is automatically configured via `CLIENT_URL` env var on Render.
+### Environment Variable:
 
-Supports multiple URLs (comma-separated):
-```
-CLIENT_URL=https://site.netlify.app,http://localhost:8000
-```
+**Key**: `API_BASE_URL`  
+**Value**: `https://verification-backend-66j0.onrender.com`
 
----
+### Build Settings:
 
-## ✅ Verification Steps
-
-1. **Check backend health**: `https://your-backend.onrender.com/api/health`
-2. **Check Netlify console** (F12) → should show: `✅ API_BASE_URL configured: https://...`
-3. **Test form submission** → should show success toast
-4. **Check Render logs** → confirm POST request received
-5. **Check Supabase** → new row in `submissions` table
+- **Build command**: `node netlify-build.js`
+- **Publish directory**: `.` (root folder)
 
 ---
 
-## 📁 Project Structure
+## 🐛 Troubleshooting CORS
 
-```
-frontend/
-├── index.html          # Main HTML with modern structure
-├── style.css           # Modern CSS with glassmorphism
-├── script.js           # Form handler & validation
-├── config.example.js   # Config template (for local dev)
-├── netlify.toml        # Netlify build configuration
-├── netlify-build.js    # Build script that generates config.js
-└── vygc-api.js         # API client library
+If you see CORS errors:
 
-backend/
-├── server.js           # Express server with CORS, Supabase, Nodemailer
-├── .env.example        # Environment variables template
-└── railway.json        # Railway deployment config (optional)
-```
+1. **Check Render logs** for: `🔧 CORS configured for origins: [...]`
+2. **Ensure `CLIENT_URL`** on Render matches your Netlify URL exactly
+3. **Restart Render service** after changing env vars (not just rebuild)
 
 ---
 
-## 🐛 Troubleshooting
+## ✅ Testing Checklist
 
-### "Connection error" message
-- ✅ Verify `API_BASE_URL` in Netlify env vars (no trailing slash)
-- ✅ Check Render `CLIENT_URL` matches your Netlify URL exactly
-- ✅ Ensure backend is "Live" on Render (green status)
-- ✅ Test API endpoint directly in browser
-
-### CORS errors
-- ✅ On Render, `CLIENT_URL` must include `https://`
-- ✅ Multiple URLs separated by commas (no spaces)
-- ✅ Backend logs will show CORS rejection if misconfigured
-
-### Email not sending
-- ✅ Use Gmail App Password (not regular password)
-- ✅ Enable 2FA on Gmail before creating app password
-- ✅ Check SMTP credentials in Render env vars
-
-### Submissions not appearing in Supabase
-- ✅ Run SQL schema from `backend/server.js` (lines 46-79) in Supabase SQL Editor
-- ✅ Table name: `submissions`
-- ✅ Check Supabase Dashboard → Table Editor
+- [ ] **Supabase**: Table `submissions` exists with all columns
+- [ ] **Render**: Service is Live (green)
+- [ ] **Render Logs**: Show `✅ Connected to Supabase successfully`
+- [ ] **Render Logs**: Show `🛣️  Registered routes:` with 4 routes
+- [ ] **Health check**: `https://verification-backend-66j0.onrender.com/api/health` returns JSON
+- [ ] **Netlify**: `API_BASE_URL` env var set correctly
+- [ ] **Netlify**: `config.js` contains correct backend URL (check Sources tab)
+- [ ] **Form submission**: Returns success toast, no CORS errors in Console
 
 ---
 
-## 🎯 Quick Deploy Checklist
+## 📞 Support
 
-**Backend (Render)**:
-- [ ] Repo connected: backend-verification
-- [ ] All 11 env vars set
-- [ ] Service is Live (green)
-- [ ] URL copied: `https://...onrender.com`
-
-**Frontend (Netlify)**:
-- [ ] Repo connected: verification
-- [ ] `API_BASE_URL` set to backend URL
-- [ ] Build triggered successfully
-- [ ] Site published
-
-**Supabase**:
-- [ ] SQL schema executed
-- [ ] Table `submissions` exists
-- [ ] RLS policies enabled
-
-**Test**:
-- [ ] Visit Netlify URL
-- [ ] Fill form → submit
-- [ ] See success toast
-- [ ] Check Render logs (POST /api/submissions)
-- [ ] Verify Supabase entry
+If issues persist:
+1. Check Render Logs (real-time)
+2. Check Netlify DevTools Console (F12)
+3. Test API directly: `curl https://verification-backend-66j0.onrender.com/api/health`
